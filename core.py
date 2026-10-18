@@ -22,6 +22,18 @@ def load_hourly(path, weather_path=None) -> pd.DataFrame:
     return df.sort_values("datetime").reset_index(drop=True)
 
 
+def fetch_forecast(lat: float = 37.5665, lon: float = 126.978, days: int = 16) -> pd.DataFrame:
+    """Open-Meteo 시간별 예보(서울 기본, 키 불필요) -> datetime, temp, rain. 실패하면 예외를 그대로 던진다."""
+    import requests
+    r = requests.get("https://api.open-meteo.com/v1/forecast", timeout=10, params={
+        "latitude": lat, "longitude": lon, "hourly": "temperature_2m,precipitation",
+        "timezone": "Asia/Seoul", "forecast_days": days})
+    r.raise_for_status()
+    h = r.json()["hourly"]
+    return pd.DataFrame({"datetime": pd.to_datetime(h["time"]), "temp": h["temperature_2m"],
+                         "rain": h["precipitation"]}).dropna()
+
+
 def split_by_date(df: pd.DataFrame, test_days: int = 28):
     """날짜 기준 분할: 마지막 test_days 일을 검증용으로. 시간 순서를 섞지 않는다."""
     cut = df["datetime"].dt.normalize().max() - pd.Timedelta(days=test_days - 1)
