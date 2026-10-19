@@ -110,9 +110,9 @@ with tab2:
                      강수=pd.cut(w["rain"], [-0.1, 0, 1, 5, 20, 1000], labels=["0", "0~1", "1~5", "5~20", "20+"]))
         a, b = st.columns(2)
         a.plotly_chart(px.bar(w.groupby("기온구간", observed=True)["rentals"].mean().reset_index(),
-                              x="기온구간", y="rentals", title="기온별 평균 시간당 대여"), width="stretch")
+                              x="기온구간", y="rentals", title="🌡️기온별(℃) 평균 시간당 대여"), width="stretch")
         b.plotly_chart(px.bar(w.groupby("강수", observed=True)["rentals"].mean().reset_index(),
-                              x="강수", y="rentals", title="강수량(mm)별 평균 시간당 대여"), width="stretch")
+                              x="강수", y="rentals", title="☂️강수량(mm)별 평균 시간당 대여"), width="stretch")
 
 with tab3:
     t = test.dropna(subset=["temp", "rain"]) if has_weather else test
